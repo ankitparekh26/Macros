@@ -1,0 +1,53 @@
+Sub Compare2WorkSheets(ws1 As Worksheet, ws2 As Worksheet)
+Dim ws1row As Long, ws2row As Long, ws1col As Integer, ws2col As Integer
+Dim maxrow As Long, maxcol As Integer, colval1 As String, colval2 As String
+Dim report As Workbook, difference As Long
+Dim row As Long, col As Integer
+Set report = Workbooks.Add
+With ws1.UsedRange
+ws1row = .Rows.Count
+ws1col = .Columns.Count
+End With
+With ws2.UsedRange
+ws2row = .Rows.Count
+ws2col = .Columns.Count
+End With
+maxrow = ws1row
+maxcol = ws1col
+If maxrow < ws2row Then maxrow = ws2row
+If maxcol < ws2col Then maxcol = ws2col
+difference = 0
+For col = 1 To maxcol
+      For row = 1 To maxrow
+      colval1 = ""
+      colval2 = ""
+      colval1 = ws1.Cells(row, col).Formula
+      colval2 = ws2.Cells(row, col).Formula
+      If colval1 <> colval2 Then
+     difference = difference + 1
+     Cells(row, col).Formula = colval1 & "<> " & colval2
+     Cells(row, col).Interior.Color = 255
+     Cells(row, col).Font.ColorIndex = 2
+     Cells(row, col).Font.Bold = True
+      End If
+Next row
+Next col
+Columns("A:B").ColumnWidth = 25
+report.Saved = True
+If difference = 0 Then
+report.Close False
+End If
+Set report = Nothing
+MsgBox difference & " cells contain different data! ", vbInformation, "Comparing Two Worksheets"
+End Sub
+
+Private Sub CommandButton1_Click()
+Compare2WorkSheets Worksheets("Sheet1"), Worksheets("Sheet2")
+'Set myWorkbook1 = Workbooks.Open("C:\familycomputerclub-website\Excel2007\testcompare2.xlsx")
+'Compare2WorkSheets Workbooks("testcompare1.xlsm").Worksheets("Sheet1"), myWorkbook1.Worksheets("Sheet1")
+End Sub
+
+
+
+
+
